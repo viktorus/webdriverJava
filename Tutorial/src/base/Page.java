@@ -18,6 +18,7 @@ public class Page {
 public static WebDriver driver = null;
 public static Properties OR =null;
 	
+
 	public void createDriver() {
 		if (driver == null) {
 			ProfilesIni allProfiles = new ProfilesIni();
