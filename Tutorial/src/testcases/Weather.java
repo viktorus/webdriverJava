@@ -10,7 +10,7 @@ public class Weather extends Page {
 	
 	@BeforeClass
 	public void beforeClass() {
-		createDriver();
+		createDriverFF();
 		driver.get("http://jobvacancies.businesslink.gov.uk");
 		
 	}
