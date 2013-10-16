@@ -2,13 +2,9 @@ package base;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-import org.openqa.selenium.By;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
@@ -17,42 +13,29 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.Wait;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
-
 import com.opera.core.systems.OperaDriver;
 
 public class Page {
-public static WebDriver driver = null;
-public static Properties OR =null;
-	
+	public static WebDriver driver = null;
 
-	public void createDriverFF() {
-		if (driver == null) {
-			ProfilesIni allProfiles = new ProfilesIni();
-			FirefoxProfile profile = allProfiles.getProfile("wd");
-			driver=new FirefoxDriver(profile);
-			driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-		}
-	}
-	
 	/**
 	 * Creates webdriver instance with the following parameters
 	 * 
-	 * @param hubURL url of the remote PC
-	 * @param browserName name of the browser
-	 * @param type remote OR local
-	 * @throws MalformedURLException 
-	 * @throws Exception
+	 * @param hubURL - url of the remote PC
+	 * @param browserName- name of the browser
+	 * @param type
+	 * 			- remote - run the test on the remote machine using hubURL
+	 * 			- local - runs the test locally
+	 * 			- profile - starting specific Firefox profile - "wd" profile must be created before running in this mode
+	 * @throws MalformedURLException
 	 */
 	public static void createDriver(String type, String browserName, String hubURL) throws MalformedURLException {
 
 		DesiredCapabilities capability = null;
-		
+
 		if (type.equalsIgnoreCase("local")) {
-	
+
 			if (browserName.equalsIgnoreCase("firefox")) {
 				driver = new FirefoxDriver();
 			} else if (browserName.equalsIgnoreCase("iexplore")) {
@@ -63,23 +46,24 @@ public static Properties OR =null;
 				driver = new OperaDriver();
 			}
 
+		} else if (type.equalsIgnoreCase("profile")) {
+			ProfilesIni allProfiles = new ProfilesIni();
+			FirefoxProfile profile = allProfiles.getProfile("wd");
+			driver = new FirefoxDriver(profile);
+
 		} else if (type.equalsIgnoreCase("remote")) {
-				
+
 			if (browserName.equalsIgnoreCase("iexplore")) {
 				capability = DesiredCapabilities.internetExplorer();
-				capability.setCapability(CapabilityType.PLATFORM,
-						Platform.WINDOWS);
+				capability.setCapability(CapabilityType.PLATFORM,Platform.WINDOWS);
 			} else {
 				capability = new DesiredCapabilities();
-				capability.setCapability(CapabilityType.BROWSER_NAME,
-						browserName);
-				capability.setCapability(CapabilityType.PLATFORM,
-						Platform.WINDOWS);
+				capability.setCapability(CapabilityType.BROWSER_NAME,browserName);
+				capability.setCapability(CapabilityType.PLATFORM,Platform.WINDOWS);
 
-				// Opera specific capabililty setting
+				// Opera specific capability setting
 				if (browserName.equals("opera")) {
-					capability.setCapability("opera.binary",
-							"c:/Program Files/Opera/opera.exe");
+					capability.setCapability("opera.binary","c:/Program Files/Opera/opera.exe");
 					capability.setCapability("opera.log.level", "CONFIG");
 				}
 			}
@@ -96,7 +80,8 @@ public static Properties OR =null;
 			}
 
 		}
-		
+
+		//set default timeout
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 
 		// maximazing browser's window
@@ -105,49 +90,13 @@ public static Properties OR =null;
 		}
 
 	}
-	
+
 	/**
-	 * 
-	 * @param by1
-	 *            = ID of the frame where the element is
-	 * @param by2
-	 *            = ID of the element to access - usually tagName
-	 * @param i
-	 *            = position of the element - 0=first, 1=second etc
+	 * Asserts if the page title is not Error
 	 */
-	public static void selectList(By by1, By by2, int i) {
-
-		WebElement menu = driver.findElement(by1);
-		List<WebElement> menuItems = menu.findElements(by2);
-		//System.out.println(menuItems.size());
-		menuItems.get(i).click();
-
-	}
-	
-	public static void waitOn(final By byType) {
-		int timeout = 50;
-		Wait<WebDriver> wait1;
-		wait1 = new WebDriverWait(driver, timeout);
-		wait1.until(new ExpectedCondition<Boolean>() {
-			public Boolean apply(WebDriver webDriver) {
-				return webDriver.findElement(byType) != null;
-			}
-		});
-
-	}
-	
-	public boolean isElementPresent(By by) {
-		try {
-			driver.findElement(by);
-		} catch (Exception e) {
-			return false;
-		}
-
-		return true;
-	}
-	
 	public static void checkIfNoError() {
-		Assert.assertEquals(driver.getTitle() != "Error", true, "Error occurs while opening the page");
+		Assert.assertEquals(driver.getTitle() != "Error", true,
+				"Error occurs while opening the page");
 	}
 
 }
