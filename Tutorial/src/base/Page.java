@@ -14,6 +14,8 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.Assert;
+import org.testng.Reporter;
+
 import com.opera.core.systems.OperaDriver;
 
 public class Page {
@@ -30,7 +32,7 @@ public class Page {
 	 * 			- profile - starting specific Firefox profile - "wd" profile must be created before running in this mode
 	 * @throws MalformedURLException
 	 */
-	public static void createDriver(String type, String browserName, String hubURL) throws MalformedURLException {
+	public static void createDriver(String type, String browserName, String hubURL, String siteURL) throws MalformedURLException {
 
 		DesiredCapabilities capability = null;
 
@@ -88,9 +90,20 @@ public class Page {
 		if (!browserName.equalsIgnoreCase("opera")) {
 			driver.manage().window().maximize();
 		}
+		
+		driver.get(siteURL);
 
 	}
 
+	/**
+	 * Close current instance of webdriver
+	 */
+	public void closeDriver() {
+		driver.close();
+		driver.quit();
+		log("Driver closed.");
+	}
+	
 	/**
 	 * Asserts if the page title is not Error
 	 */
@@ -98,5 +111,15 @@ public class Page {
 		Assert.assertEquals(driver.getTitle() != "Error", true,
 				"Error occurs while opening the page");
 	}
+	
+	/**
+	 * Prints a message (msg) to both console (eclipse) and reporter (ant)
+	 * @param msg 
+	 */
+	public void log(String msg) {
+		System.out.println(msg);
+		Reporter.log(msg);
+	}
+
 
 }

@@ -12,7 +12,6 @@ public class LoginPage extends Page{
 	@FindBy(partialLinkText="Sign") private WebElement userFld;
 	@FindBy(partialLinkText="Log") private WebElement pwdFld;
 	@FindBy(partialLinkText="Log") private WebElement loginBtn;
-
 	
 	public LoginPage() {
 		PageFactory.initElements(driver, this);

@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="Suite" parallel="none" verbose="2">
-  
-  <test name="JPW">
-    <classes>
-      <class name="testcases.Weather"/>
-      </classes>
-  </test>
-  
+
+	<test name="Tutorial - checking weather in Prague">
+		<parameter name="TYPE" value="local" />
+		<parameter name="BROWSER" value="firefox" />
+		<parameter name="HUB" value="http://10.10.10.10:4444/wd/hub" />
+		<parameter name="SITEURL" value="http://bbc.co.uk" />
+		<parameter name="USERNAME" value="someusername" />
+		<parameter name="PWD" value="somepassword" />
+		<classes>
+			<class name="testcases.TestCase1" />
+		</classes>
+	</test>
 
 </suite> 
