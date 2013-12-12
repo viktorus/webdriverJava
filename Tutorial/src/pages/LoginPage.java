@@ -8,14 +8,18 @@ import base.Page;
 
 public class LoginPage extends Page{
 
-	@FindBy(partialLinkText="") private WebElement test;
+	@FindBy(partialLinkText="bbcid_unique") private WebElement userNameFld;
+	@FindBy(partialLinkText="bbcid_password") private WebElement passwdFld;
+	@FindBy(partialLinkText="bbcid_submit_button") private WebElement submitBtn;
 	
 	public LoginPage() {
 		PageFactory.initElements(driver, this);
 	}
 	
-	public HomePage doLogin() {
-		//TODO: add logic
+	public HomePage doLogin(String usernm, String pwd) {
+		userNameFld.sendKeys(usernm);
+		passwdFld.sendKeys(pwd);
+		submitBtn.click();
 		return new HomePage(); 
 	}
 	
