@@ -11,11 +11,11 @@ public class TestCase1 extends Page {
 	
 	@BeforeClass
 	@Parameters({"TYPE", "BROWSER", "HUB", "SITEURL"})
-	public void beforeClass(String TYPE, String BROWSER, String HUB, String SITEURL) throws Exception  {
-		createDriver(TYPE, BROWSER, HUB, SITEURL);
+	public void beforeClass(String TYPE, String BROWSER, String HUB, String SITEURL) {
+		createDriver(TYPE, BROWSER, HUB).openURL(SITEURL);
 	}
 	
-	@Test
+	@Test(description="Search for current weather in Prague")
 	public void getTodaysWeather() {
 		new HomePage().gotoWeatherPage().searchLocation("Prague").logTodayWeather();
 	}

@@ -1,6 +1,5 @@
 package base;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.Platform;
@@ -16,36 +15,30 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.Assert;
 import org.testng.Reporter;
 
-import com.opera.core.systems.OperaDriver;
-
 public class Page {
 	public static WebDriver driver = null;
-
+	DesiredCapabilities capability = null;
+	
 	/**
 	 * Creates webdriver instance with the following parameters
 	 * 
 	 * @param hubURL - url of the remote PC
-	 * @param browserName- name of the browser
+	 * @param browserName - supported browsers firefox, chrome, iexplore
 	 * @param type
 	 * 			- remote - run the test on the remote machine using hubURL
 	 * 			- local - runs the test locally
 	 * 			- profile - starting specific Firefox profile - "wd" profile must be created before running in this mode
-	 * @throws MalformedURLException
+	 *
 	 */
-	public static void createDriver(String type, String browserName, String hubURL, String siteURL) throws MalformedURLException {
-
-		DesiredCapabilities capability = null;
+	public Page createDriver(String type, String browserName, String hubURL) {
 
 		if (type.equalsIgnoreCase("local")) {
-
 			if (browserName.equalsIgnoreCase("firefox")) {
 				driver = new FirefoxDriver();
 			} else if (browserName.equalsIgnoreCase("iexplore")) {
 				driver = new InternetExplorerDriver();
 			} else if (browserName.equalsIgnoreCase("chrome")) {
 				driver = new ChromeDriver();
-			} else if (browserName.equalsIgnoreCase("opera")) {
-				driver = new OperaDriver();
 			}
 
 		} else if (type.equalsIgnoreCase("profile")) {
@@ -57,42 +50,43 @@ public class Page {
 
 			if (browserName.equalsIgnoreCase("iexplore")) {
 				capability = DesiredCapabilities.internetExplorer();
-				capability.setCapability(CapabilityType.PLATFORM,Platform.WINDOWS);
+				capability.setCapability(CapabilityType.PLATFORM,
+						Platform.WINDOWS);
 			} else {
 				capability = new DesiredCapabilities();
-				capability.setCapability(CapabilityType.BROWSER_NAME,browserName);
-				capability.setCapability(CapabilityType.PLATFORM,Platform.WINDOWS);
-
-				// Opera specific capability setting
-				if (browserName.equals("opera")) {
-					capability.setCapability("opera.binary","c:/Program Files/Opera/opera.exe");
-					capability.setCapability("opera.log.level", "CONFIG");
-				}
+				capability.setCapability(CapabilityType.BROWSER_NAME,
+						browserName);
+				capability.setCapability(CapabilityType.PLATFORM,
+						Platform.WINDOWS);
 			}
+
 			capability.setCapability(
 					CapabilityType.ForSeleniumServer.ENSURING_CLEAN_SESSION,
 					"ensureCleanSession");
 
-			System.out.println("Creating new Remote WebDriver instance");
-
-			if (browserName.equals("opera")) {
-				driver = new OperaDriver(capability);
-			} else {
+			try {
 				driver = new RemoteWebDriver(new URL(hubURL), capability);
+				log("Driver started.");
+			} catch (Exception e) {
+				log("Driver failed to start");
 			}
-
 		}
 
-		//set default timeout
+		// set default timeout
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 
-		// maximazing browser's window
-		if (!browserName.equalsIgnoreCase("opera")) {
-			driver.manage().window().maximize();
-		}
+		// maximize browser window
+		driver.manage().window().maximize();
 		
+		return this;
+	}
+	
+	/**
+	 * Open site URL - specified in testng.xml
+	 */
+	public Page openURL(String siteURL) {
 		driver.get(siteURL);
-
+		return this;
 	}
 
 	/**
@@ -107,7 +101,7 @@ public class Page {
 	/**
 	 * Asserts if the page title is not Error
 	 */
-	public static void checkIfNoError() {
+	public void checkIfNoError() {
 		Assert.assertEquals(driver.getTitle() != "Error", true,
 				"Error occurs while opening the page");
 	}
